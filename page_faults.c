@@ -1,52 +1,135 @@
 #include <stdio.h>
 #include <stdlib.h>
-int main()
-{
-      int *referenceString, pageFaults = 0, i, j, s, pages, frames;
-      printf("\nEnter the number of Pages:\t");
-      scanf("%d", &pages);
-      referenceString = (int*)malloc(pages*sizeof(int*));
-      printf("\nEnter reference string values:\n");
-      int(i = 0; i < pages; i++)
+
+void fifo(int pages,int frame_size,int *referenceStr, int *frame){
+						int i,j, page_faults = 0, flag, *frames; 
+						frames = (int*)malloc(frame_size*sizeof(int));
+						for(i=0;i<frame_size;i++){
+										frames[i] = frame[i];
+						}
+						for(i = 0; i< pages; i++)
       {
-            scanf("%d", &referenceString[i]);
-      }
-      printf("\n What are the total number of frames:\t");
-      {
-            scanf("%d", &frames);
-      }
-      int temp[frames];
-      for(i= 0; i< frames; i++)
-      {
-            temp[i] = -1;
-      }
-      for(i = 0; i< pages; i++)
-      {
-            s = 0;
-            for(j = 0; j < frames; j++)
+            flag = 0;
+            for(j = 0; j < frame_size; j++)
             {
-                  if(referenceString[i] == temp[j])
+                  if(referenceStr[i] == frames[j])
                   {
-                        s++;
-                        pageFaults--;
+                        flag++;
+                        page_faults--;
                   }
             }     
-            pageFaults++;
-            if((pageFaults <= frames) && (s == 0))
+            page_faults++;
+            if((page_faults <= frame_size) && (flag == 0))
             {
-                  temp[i] = referenceString[i];
+                  frames[i] = referenceStr[i];
             }   
-            else if(s == 0)
+            else if(flag == 0)
             {
-                  temp[(pageFaults - 1) % frames] = referenceString[i];
+                  frames[(page_faults - 1) % frame_size] = referenceStr[i];
             }
             printf("\n");
-            for(j = 0; j < frames; j++)
+            for(j = 0; j < frame_size; j++)
             {     
-                  printf("%d\t", temp[j]);
+                  printf("%d\t", frames[j]);
             }
       } 
-      printf("\nTotal Page Faults:\t%d\n", pageFaults);
-      return 0;
+      printf("\nTotal Page Faults:\t%d\n", page_faults);
+}
+int searchLRU(int *time, int frame_size){
+ 				int min=time[0], pos = 0, i;
+ 				for(i=0;i<frame_size;i++){
+ 								if(min > time[i]){
+ 												min = time[i];
+ 												pos = i;
+ 								}
+ 				}
+ 				return pos;
+}
+ 
+void lru(int pages, int frame_size, int *frame, int *referenceStr){
+						int flag1,flag2,i,j, pos =0, counter =0, page_faults=0, *time, *frames;
+						frames = (int*)malloc(frame_size*sizeof(int));
+						for(i=0;i<frame_size;i++){
+										frames[i] = frame[i];
+						}
+						time = (int*)malloc(frame_size*sizeof(int));
+						for(i=0;i<pages;i++){
+											flag1=0;
+											flag2=0;
+											for(j=0;j<frame_size;j++){
+											//checking whether the frame already has that page
+															if(frames[j] == referenceStr[i]){
+																			flag1=1;
+																			flag2=1;
+																			counter++;
+																			time[j]=counter;
+																			break;
+															}
+											}
+											if(flag1 == 0){
+															for(j=0;j<frame_size;j++){
+															//checking whether frame is completely filled or not
+																			if(frames[j] == -1){
+																							frames[j]=referenceStr[i];
+																							counter++;
+																							page_faults++;
+																							time[j]=counter;
+																							flag2=1;
+																							break;					
+																			}
+															}
+											}
+											//the page is not present in the frame
+											if(flag2==0){
+																			pos = searchLRU(time, frame_size);
+																			frames[pos] = referenceStr[i];
+																			counter++;
+																			page_faults++;
+																			time[pos] = counter;
+																			break;
+											}
+											printf("\n");
+            for(j = 0; j < frame_size; j++)
+            {     
+                  printf("%d\t", frames[j]);
+            }
+						}
+						printf("\nTotal Page Faults:\t%d\n", page_faults);
 }
 
+void main()
+{
+      int *referenceStr, *frames, i, j, s, pages, frame_size, option;
+      printf("\nEnter the number of Pages: ");
+      scanf("%d", &pages);
+      referenceStr = (int*)malloc(pages*sizeof(int*));
+      printf("\nEnter reference string values: ");
+      for(i = 0; i < pages; i++)
+      {
+            scanf("%d", &referenceStr[i]);
+      }
+      printf("\n What are the total number of frames: ");
+      {
+            scanf("%d", &frame_size);
+      }
+      frames = (int*)malloc(frame_size*sizeof(int));
+      for(i= 0; i< frame_size; i++)
+      {
+            frames[i] = -1;
+      }
+      choose: printf("Which page replacement algorithm to be implemented? \n 1. FIFO \n 2. LRU \n 3. LFU \n \n 4. Exit \n");
+      printf("Choose an option: ");
+      scanf("%d", &option);
+      switch(option){
+      				case 1:  fifo(pages,frame_size, referenceStr, frames);
+      													goto choose;
+      				case 2: 	lru(pages, frame_size, frames,referenceStr);
+      													goto choose;
+      				case 3: printf("Not yet implemented \n");
+      												goto choose;
+      				case 4: printf("Exiting the program \n");
+      												exit(0);
+      				default: printf("Incorrect option");
+      													goto choose;
+      }    
+}
