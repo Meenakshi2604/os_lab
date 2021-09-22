@@ -2,13 +2,13 @@
 #include <stdlib.h>
 
 void fifo(int pages,int frame_size,int *referenceStr, int *frame){
-						int i,j, page_faults = 0, flag, *frames; 
-						frames = (int*)malloc(frame_size*sizeof(int));
-						for(i=0;i<frame_size;i++){
-										frames[i] = frame[i];
-						}
-						for(i = 0; i< pages; i++)
-      {
+	int i,j, page_faults = 0, flag, *frames; 
+	frames = (int*)malloc(frame_size*sizeof(int));
+	for(i=0;i<frame_size;i++){
+		frames[i] = frame[i];
+	}
+	for(i = 0; i< pages; i++)
+      	{
             flag = 0;
             for(j = 0; j < frame_size; j++)
             {
@@ -36,65 +36,65 @@ void fifo(int pages,int frame_size,int *referenceStr, int *frame){
       printf("\nTotal Page Faults:\t%d\n", page_faults);
 }
 int searchLRU(int *time, int frame_size){
- 				int min=time[0], pos = 0, i;
- 				for(i=0;i<frame_size;i++){
- 								if(min > time[i]){
- 												min = time[i];
- 												pos = i;
- 								}
- 				}
- 				return pos;
+	int min=time[0], pos = 0, i;
+ 	for(i=0;i<frame_size;i++){
+ 		if(min > time[i]){
+ 			min = time[i];
+ 			pos = i;
+ 		}
+ 	}
+ return pos;
 }
  
 void lru(int pages, int frame_size, int *frame, int *referenceStr){
-						int flag1,flag2,i,j, pos =0, counter =0, page_faults=0, *time, *frames;
-						frames = (int*)malloc(frame_size*sizeof(int));
-						for(i=0;i<frame_size;i++){
-										frames[i] = frame[i];
-						}
-						time = (int*)malloc(frame_size*sizeof(int));
-						for(i=0;i<pages;i++){
-											flag1=0;
-											flag2=0;
-											for(j=0;j<frame_size;j++){
-											//checking whether the frame already has that page
-															if(frames[j] == referenceStr[i]){
-																			flag1=1;
-																			flag2=1;
-																			counter++;
-																			time[j]=counter;
-																			break;
-															}
-											}
-											if(flag1 == 0){
-															for(j=0;j<frame_size;j++){
-															//checking whether frame is completely filled or not
-																			if(frames[j] == -1){
-																							frames[j]=referenceStr[i];
-																							counter++;
-																							page_faults++;
-																							time[j]=counter;
-																							flag2=1;
-																							break;					
-																			}
-															}
-											}
-											//the page is not present in the frame
-											if(flag2==0){
-																			pos = searchLRU(time, frame_size);
-																			frames[pos] = referenceStr[i];
-																			counter++;
-																			page_faults++;
-																			time[pos] = counter;
-																			break;
-											}
-											printf("\n");
+	int flag1,flag2,i,j, pos =0, counter =0, page_faults=0, *time, *frames;
+	frames = (int*)malloc(frame_size*sizeof(int));
+	for(i=0;i<frame_size;i++){
+		frames[i] = frame[i];
+	}
+time = (int*)malloc(frame_size*sizeof(int));
+for(i=0;i<pages;i++){
+	flag1=0;
+	flag2=0;
+for(j=0;j<frame_size;j++){
+//checking whether the frame already has that page
+if(frames[j] == referenceStr[i]){
+	flag1=1;
+	flag2=1;
+	counter++;
+	time[j]=counter;
+	break;
+}
+}
+if(flag1 == 0){
+	for(j=0;j<frame_size;j++){
+		//checking whether frame is completely filled or not
+		if(frames[j] == -1){
+				frames[j]=referenceStr[i];
+				counter++;
+				page_faults++;
+				time[j]=counter;
+				flag2=1;
+				break;					
+			}
+		}
+	}
+	//the page is not present in the frame
+	if(flag2==0){
+		pos = searchLRU(time, frame_size);
+		frames[pos] = referenceStr[i];
+		counter++;
+		page_faults++;
+		time[pos] = counter;
+		break;
+	}
+	printf("\n");
             for(j = 0; j < frame_size; j++)
             {     
                   printf("%d\t", frames[j]);
             }
-						}
-						printf("\nTotal Page Faults:\t%d\n", page_faults);
+	}
+	printf("\nTotal Page Faults:\t%d\n", page_faults);
 }
 
 void main()
@@ -122,14 +122,14 @@ void main()
       scanf("%d", &option);
       switch(option){
       				case 1:  fifo(pages,frame_size, referenceStr, frames);
-      													goto choose;
-      				case 2: 	lru(pages, frame_size, frames,referenceStr);
-      													goto choose;
+      					goto choose;
+      				case 2: lru(pages, frame_size, frames,referenceStr);
+      					goto choose;
       				case 3: printf("Not yet implemented \n");
-      												goto choose;
+      					goto choose;
       				case 4: printf("Exiting the program \n");
-      												exit(0);
+      					exit(0);
       				default: printf("Incorrect option");
-      													goto choose;
+      					goto choose;
       }    
 }
