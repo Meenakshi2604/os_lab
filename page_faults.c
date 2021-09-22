@@ -1,51 +1,52 @@
-#include<stdio.h>
-#include<stdlib.h>
-
-void main(){
-  int frame_size, n, page_faults=0, i, j, front=-1,rear=-1;
-  int *ref_str, *frame;
-  printf("Enter the frame size: ");
-  scanf("%d",&frame_size);
-  frame = (int*)malloc(frame_size*sizeof(int));
-  printf("Enter the total number of pages: ");
-  scanf("%d",&n);
-  ref_str = (int*)malloc(n*sizeof(int));
-  printf("Enter the page numbers one by one: \n");
-  for(i=0;i<n;i++){
-  	scanf("%d",&ref_str[i]);
-  }
-  for(j=0;j<frame_size;j++){
-  	frame[i]= -1;
-  }
-   //traversing from frame
-   for(i=0;i<n;i++){
-   	//when the frame is not yet filled
-   	if(front== -1){
-   		front=0;
-   		rear=0;
-   		frame[rear]=ref_str[i];
-   		page_faults++;
-   	}
-   	else if(rear < frame_size-1 && frame[rear]== -1){
-   		rear= (rear+1)% frame_size;
-   		frame[rear]=ref_str[i];
-   		page_faults++;
-   	}
-   	
-   	//when the frame is full but page is already present 
-   	else{
-	   	for(j=0;j<frame_size;j++){
-	   		if(frame[j]==ref_str[i]){
-	   			break;
-	   		}
-	   		else{
-	   			frame[front]=ref_str[i];
-	   			front=(front+1)% frame_size;
-	   			page_faults++;
-	   		}
-	   	}
-   	}
-   }
-   
-   printf("\n Page faults= %d \n", page_faults);
+#include <stdio.h>
+#include <stdlib.h>
+int main()
+{
+      int *referenceString, pageFaults = 0, i, j, s, pages, frames;
+      printf("\nEnter the number of Pages:\t");
+      scanf("%d", &pages);
+      referenceString = (int*)malloc(pages*sizeof(int*));
+      printf("\nEnter reference string values:\n");
+      int(i = 0; i < pages; i++)
+      {
+            scanf("%d", &referenceString[i]);
+      }
+      printf("\n What are the total number of frames:\t");
+      {
+            scanf("%d", &frames);
+      }
+      int temp[frames];
+      for(i= 0; i< frames; i++)
+      {
+            temp[i] = -1;
+      }
+      for(i = 0; i< pages; i++)
+      {
+            s = 0;
+            for(j = 0; j < frames; j++)
+            {
+                  if(referenceString[i] == temp[j])
+                  {
+                        s++;
+                        pageFaults--;
+                  }
+            }     
+            pageFaults++;
+            if((pageFaults <= frames) && (s == 0))
+            {
+                  temp[i] = referenceString[i];
+            }   
+            else if(s == 0)
+            {
+                  temp[(pageFaults - 1) % frames] = referenceString[i];
+            }
+            printf("\n");
+            for(j = 0; j < frames; j++)
+            {     
+                  printf("%d\t", temp[j]);
+            }
+      } 
+      printf("\nTotal Page Faults:\t%d\n", pageFaults);
+      return 0;
 }
+
